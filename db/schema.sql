@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS inscripciones (
         'reingreso',
         'egresado'
     ) NOT NULL DEFAULT 'inscrito',
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
     FOREIGN KEY (id_alumno) REFERENCES alumnos(id),
     FOREIGN KEY (id_programa) REFERENCES programas(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -149,3 +149,173 @@ INSERT INTO historial_status (id, id_inscripcion, estatus_anterior, estatus_nuev
     (27, 12, 'activo', 'suspendido',  '2023-07-02', 'Pausa temporal por situación laboral');
 
 ----------------------------------------------------------------
+-- Stored Procedure --
+----------------------------------------------------------------
+
+-- SP: registrar_cambio_estatus
+-- Recibe el id de una inscripción, el nuevo estatus y el motivo.
+-- Valida que la inscripción exista, obtiene el estatus actual,
+-- actualiza inscripciones e inserta el movimiento en historial_status.
+-- Si la inscripción no existe, señaliza un error y no hace nada.
+
+DELIMITER $$
+
+CREATE PROCEDURE registrar_cambio_estatus (
+    IN  p_id_inscripcion  INT,
+    IN  p_nuevo_estatus   ENUM('inscrito','activo','suspendido','baja_empresa','baja_programa','reingreso','egresado'),
+    IN  p_motivo          VARCHAR(255)
+)
+BEGIN
+    DECLARE v_estatus_actual  VARCHAR(20);
+    DECLARE v_id_alumno       INT;
+    DECLARE v_nombre_alumno   VARCHAR(100);
+
+    -- Verificar que la inscripción existe y obtener datos relacionados
+    SELECT
+        i.estatus,
+        a.id,
+        a.nombre
+    INTO
+        v_estatus_actual,
+        v_id_alumno,
+        v_nombre_alumno
+    FROM inscripciones i
+    JOIN alumnos a ON a.id = i.id_alumno
+    WHERE i.id = p_id_inscripcion
+    LIMIT 1;
+
+    -- Si no se encontró la inscripción, lanzar error y salir
+    IF v_estatus_actual IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Error: la inscripción indicada no existe.';
+    ELSE
+        -- Actualizar el estatus en inscripciones
+        UPDATE inscripciones
+        SET estatus = p_nuevo_estatus
+        WHERE id = p_id_inscripcion;
+
+        -- Registrar el movimiento en historial_status
+        INSERT INTO historial_status (id_inscripcion, estatus_anterior, estatus_nuevo, fecha_cambio, motivo)
+        VALUES (p_id_inscripcion, v_estatus_actual, p_nuevo_estatus, CURDATE(), p_motivo);
+
+        -- Confirmar la operación al llamador
+        SELECT
+            v_nombre_alumno AS alumno,
+            v_estatus_actual AS estatus_anterior,
+            p_nuevo_estatus  AS estatus_nuevo,
+            CURDATE() AS fecha_cambio,
+            p_motivo AS motivo;
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- -- Ejemplo de uso:
+-- -- CALL registrar_cambio_estatus(2, 'activo', 'Regularización de adeudo completada');
+
+-- ----------------------------------------------------------------
+-- -- Queries de análisis --
+-- ----------------------------------------------------------------
+
+-- -- 1. Alumnos activos por programa
+-- SELECT
+--     p.nombre AS programa,
+--     COUNT(i.id) AS alumnos_activos
+-- FROM inscripciones i
+-- JOIN programas p ON p.id = i.id_programa
+-- WHERE i.estatus = 'activo'
+-- GROUP BY p.id, p.nombre
+-- ORDER BY alumnos_activos DESC;
+
+-- -- 2. Alumnos que tuvieron al menos un cambio de estatus en los últimos 30 días
+-- SELECT DISTINCT
+--     a.id AS id_alumno,
+--     a.nombre AS alumno,
+--     a.empresa,
+--     hs.fecha_cambio,
+--     hs.estatus_anterior,
+--     hs.estatus_nuevo
+-- FROM historial_status hs
+-- JOIN inscripciones i ON i.id = hs.id_inscripcion
+-- JOIN alumnos a ON a.id = i.id_alumno
+-- WHERE hs.fecha_cambio >= CURDATE() - INTERVAL 30 DAY
+-- ORDER BY hs.fecha_cambio DESC;
+
+-- -- 3. Tasa de baja por programa (bajas / total inscritos)
+-- SELECT
+--     p.nombre AS programa,
+--     COUNT(i.id) AS total_inscritos,
+--     SUM(i.estatus IN ('baja_empresa','baja_programa')) AS total_bajas,
+--     ROUND(SUM(i.estatus IN ('baja_empresa','baja_programa')) / COUNT(i.id) * 100, 2) AS tasa_baja_pct
+-- FROM inscripciones i
+-- JOIN programas p ON p.id = i.id_programa
+-- GROUP BY p.id, p.nombre
+-- ORDER BY tasa_baja_pct DESC;
+
+-- -- 4. Historial completo de un alumno específico (JOIN de 4 tablas)
+-- SELECT
+--     a.id AS id_alumno,
+--     a.nombre AS alumno,
+--     a.empresa,
+--     p.nombre AS programa,
+--     hs.fecha_cambio,
+--     hs.estatus_anterior,
+--     hs.estatus_nuevo,
+--     hs.motivo
+-- FROM alumnos a
+-- JOIN inscripciones i ON i.id_alumno = a.id
+-- JOIN programas p ON p.id = i.id_programa
+-- JOIN historial_status hs ON hs.id_inscripcion = i.id
+-- WHERE a.id = 1 -- cambiar al id del alumno
+-- ORDER BY hs.fecha_cambio ASC;
+
+-- -- 5. Alumnos que pasaron de baja_empresa a activo (reingreso)
+-- SELECT
+--     a.id AS id_alumno,
+--     a.nombre AS alumno,
+--     a.empresa,
+--     p.nombre AS programa,
+--     hs.fecha_cambio AS fecha_reingreso,
+--     hs.motivo
+-- FROM historial_status hs
+-- JOIN inscripciones i ON i.id = hs.id_inscripcion
+-- JOIN alumnos a ON a.id = i.id_alumno
+-- JOIN programas p ON p.id = i.id_programa
+-- WHERE hs.estatus_anterior = 'baja_empresa'
+--   AND hs.estatus_nuevo IN ('activo', 'reingreso')
+-- ORDER BY hs.fecha_cambio ASC;
+
+-- -- -------------------------------------------------------
+-- -- Indicador 6: Tiempo promedio de activación por programa
+-- -- -------------------------------------------------------
+-- -- Definición:
+-- --   Mide cuántos días transcurren en promedio entre el momento
+-- --   en que un alumno queda registrado como 'inscrito' y el momento
+-- --   en que su estatus cambia a 'activo', agrupado por programa.
+-- --
+-- -- Fórmula:
+-- --   AVG( fecha_cambio('activo') - fecha_cambio('inscrito') )  por programa
+-- --   Expresado en días con un decimal de precisión.
+-- --
+-- -- Justificación:
+-- --   Un tiempo de activación largo puede señalar cuellos de botella
+-- --   administrativos (validación de documentos, pagos, asignación de grupo).
+-- --   Permite comparar la eficiencia operativa entre programas y establecer
+-- --   un umbral máximo de días aceptable para la institución.
+
+-- SELECT
+--     p.nombre AS programa,
+--     COUNT(DISTINCT i.id_alumno) AS alumnos,
+--     ROUND(AVG(DATEDIFF(hs_activo.fecha_cambio, hs_inscrito.fecha_cambio)), 1) AS dias_promedio_activacion
+-- FROM inscripciones i
+-- JOIN programas p ON p.id = i.id_programa
+-- JOIN historial_status hs_inscrito
+--     ON hs_inscrito.id_inscripcion = i.id
+--     AND hs_inscrito.estatus_nuevo = 'inscrito'
+--     AND hs_inscrito.estatus_anterior IS NULL
+-- JOIN historial_status hs_activo
+--     ON hs_activo.id_inscripcion = i.id
+--     AND hs_activo.estatus_nuevo = 'activo'
+--     AND hs_activo.estatus_anterior = 'inscrito'
+-- GROUP BY p.id, p.nombre
+-- ORDER BY dias_promedio_activacion DESC;

@@ -1,1 +1,15 @@
-<p>resumen works!</p>
+<div class="resumen-container">
+    <h2>Resumen de Inscripciones</h2>
+    <p class="total">Total de alumnos registrados: <strong>{{ totalAlumnos }}</strong></p>
+  
+    <div class="tarjetas-grid">
+      <div
+        class="tarjeta"
+        *ngFor="let t of tarjetas"
+        [style.border-left-color]="t.color"
+      >
+        <span class="tarjeta-count" [style.color]="t.color">{{ t.count }}</span>
+        <span class="tarjeta-label">{{ t.label }}</span>
+      </div>
+    </div>
+  </div>

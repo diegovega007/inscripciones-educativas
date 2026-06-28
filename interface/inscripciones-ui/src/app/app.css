@@ -1,0 +1,31 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  nav {
+    background: #1a237e;
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 2rem;
+  }
+  
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  
+  nav a:hover,
+  nav a.activo {
+    background: #3949ab;
+  }
+  
+  main {
+    padding: 2rem;
+  }

@@ -1,0 +1,122 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 100;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 8px;
+    width: 440px;
+    z-index: 101;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .modal-header h3 {
+    color: #1a237e;
+    margin: 0;
+  }
+  
+  .btn-cerrar {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .modal-body p {
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .campo label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .campo select,
+  .campo textarea {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    resize: vertical;
+  }
+  
+  .error {
+    color: #b71c1c;
+    font-size: 0.85rem;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .btn-cancelar {
+    background: #eee;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-guardar {
+    background: #1a237e;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-guardar:hover { background: #3949ab; }
+  
+  /* Badges */
+  .badge {
+    padding: 0.2rem 0.5rem;
+    margin-left: 0.5rem;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  
+  .badge.activo        { background: #2e7d32; }
+  .badge.inscrito      { background: #1565c0; }
+  .badge.suspendido    { background: #e65100; }
+  .badge.baja_empresa  { background: #b71c1c; }
+  .badge.baja_programa { background: #880e4f; }
+  .badge.reingreso     { background: #4527a0; }
+  .badge.egresado      { background: #00695c; }

@@ -1,0 +1,86 @@
+.alumnos-container {
+    max-width: 1100px;
+  }
+  
+  h2 {
+    margin-bottom: 1rem;
+    color: #1a237e;
+  }
+  
+  .filtros {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .filtros select {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  thead {
+    background: #1a237e;
+    color: #fff;
+  }
+  
+  th, td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    font-size: 0.9rem;
+  }
+  
+  tbody tr:nth-child(even) {
+    background: #f5f5f5;
+  }
+  
+  tbody tr:hover {
+    background: #e8eaf6;
+  }
+  
+  .sin-resultados {
+    text-align: center;
+    color: #999;
+    padding: 2rem;
+  }
+  
+  /* Badges de estatus */
+  .badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  
+  .badge.activo        { background: #2e7d32; }
+  .badge.inscrito      { background: #1565c0; }
+  .badge.suspendido    { background: #e65100; }
+  .badge.baja_empresa  { background: #b71c1c; }
+  .badge.baja_programa { background: #880e4f; }
+  .badge.reingreso     { background: #4527a0; }
+  .badge.egresado      { background: #00695c; }
+  
+  .btn-cambiar {
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    padding: 0.35rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  
+  .btn-cambiar:hover {
+    background: #1a237e;
+  }

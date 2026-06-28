@@ -1,1 +1,39 @@
-<p>modal-estatus works!</p>
+<div class="overlay" (click)="onCerrar()"></div>
+
+<div class="modal">
+  <div class="modal-header">
+    <h3>Cambiar Estatus</h3>
+    <button class="btn-cerrar" (click)="onCerrar()">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <p><strong>Alumno:</strong> {{ fila.alumno.nombre }}</p>
+    <p><strong>Programa:</strong> {{ fila.programaNombre }}</p>
+    <p>
+      <strong>Estatus actual:</strong>
+      <span class="badge" [ngClass]="fila.inscripcion.estatus">
+        {{ fila.inscripcion.estatus }}
+      </span>
+    </p>
+
+    <div class="campo">
+      <label>Nuevo estatus</label>
+      <select [(ngModel)]="nuevoEstatus">
+        <option value="">-- Seleccionar --</option>
+        <option *ngFor="let e of estatusOpciones" [value]="e">{{ e }}</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Motivo</label>
+      <textarea [(ngModel)]="motivo" rows="3" placeholder="Describe el motivo del cambio..."></textarea>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-cancelar" (click)="onCerrar()">Cancelar</button>
+    <button class="btn-guardar" (click)="guardar()">Guardar</button>
+  </div>
+</div>

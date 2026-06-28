@@ -1,1 +1,61 @@
-<p>alumnos works!</p>
+<div class="alumnos-container">
+    <h2>Alumnos Inscritos</h2>
+  
+    <!-- Filtros -->
+    <div class="filtros">
+      <select [(ngModel)]="filtroEstatus" (change)="aplicarFiltros()">
+        <option value="">Todos los estatus</option>
+        <option *ngFor="let e of estatusOpciones" [value]="e">{{ e }}</option>
+      </select>
+  
+      <select [(ngModel)]="filtroPrograma" (change)="aplicarFiltros()">
+        <option value="">Todos los programas</option>
+        <option *ngFor="let p of programas" [value]="p.id">{{ p.nombre }}</option>
+      </select>
+    </div>
+  
+    <!-- Tabla -->
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Empresa</th>
+          <th>Programa</th>
+          <th>Fecha Ingreso</th>
+          <th>Estatus</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fila of filasFiltradas">
+          <td>{{ fila.alumno.id }}</td>
+          <td>{{ fila.alumno.nombre }}</td>
+          <td>{{ fila.alumno.empresa }}</td>
+          <td>{{ fila.programaNombre }}</td>
+          <td>{{ fila.alumno.fechaIngreso }}</td>
+          <td>
+            <span class="badge" [ngClass]="fila.inscripcion.estatus">
+              {{ fila.inscripcion.estatus }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-cambiar" (click)="abrirModal(fila)">
+              Cambiar estatus
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="filasFiltradas.length === 0">
+          <td colspan="7" class="sin-resultados">No hay alumnos con ese filtro.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Modal -->
+  <app-modal-estatus
+    *ngIf="mostrarModal && alumnoSeleccionado"
+    [fila]="alumnoSeleccionado"
+    (cerrar)="cerrarModal()"
+    (actualizado)="onEstatusActualizado()"
+  />

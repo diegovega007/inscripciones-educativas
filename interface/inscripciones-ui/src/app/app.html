@@ -1,9 +1,20 @@
-<nav>
-  <a routerLink="/resumen"   routerLinkActive="activo">Resumen</a>
-  <a routerLink="/alumnos"   routerLinkActive="activo">Alumnos</a>
-  <a routerLink="/registro"  routerLinkActive="activo">Registro</a>
-</nav>
-
 <main>
-  <router-outlet />
+
+  <!-- Resumen -->
+  <section class="seccion-resumen">
+    <app-resumen></app-resumen>
+  </section>
+
+  <div class="divisor"></div>
+
+  <!-- Alumnos + Registro -->
+  <section class="seccion-principal">
+    <div class="panel-alumnos">
+      <app-alumnos></app-alumnos>
+    </div>
+    <div class="panel-registro">
+      <app-registro></app-registro>
+    </div>
+  </section>
+
 </main>

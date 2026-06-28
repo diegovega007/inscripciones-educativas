@@ -1,1 +1,47 @@
-<p>registro works!</p>
+<h2>Nuevo Alumno</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()">
+
+  <div class="campo">
+    <label>Nombre completo *</label>
+    <input type="text" formControlName="nombre" placeholder="Ej. Juan Pérez" />
+    <span class="error" *ngIf="f['nombre'].touched && f['nombre'].errors?.['required']">
+      El nombre es obligatorio.
+    </span>
+    <span class="error" *ngIf="f['nombre'].touched && f['nombre'].errors?.['minlength']">
+      Mínimo 3 caracteres.
+    </span>
+  </div>
+
+  <div class="campo">
+    <label>Empresa *</label>
+    <input type="text" formControlName="empresa" placeholder="Ej. Soriana" />
+    <span class="error" *ngIf="f['empresa'].touched && f['empresa'].errors?.['required']">
+      La empresa es obligatoria.
+    </span>
+  </div>
+
+  <div class="campo">
+    <label>Programa *</label>
+    <select formControlName="programaId">
+      <option value="">-- Seleccionar programa --</option>
+      <option *ngFor="let p of programas" [value]="p.id">{{ p.nombre }}</option>
+    </select>
+    <span class="error" *ngIf="f['programaId'].touched && f['programaId'].errors?.['required']">
+      Selecciona un programa.
+    </span>
+  </div>
+
+  <div class="campo">
+    <label>Fecha de ingreso *</label>
+    <input type="date" formControlName="fechaIngreso" />
+    <span class="error" *ngIf="f['fechaIngreso'].touched && f['fechaIngreso'].errors?.['required']">
+      La fecha es obligatoria.
+    </span>
+  </div>
+
+  <p class="exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+
+  <button type="submit" class="btn-guardar">Registrar Alumno</button>
+
+</form>

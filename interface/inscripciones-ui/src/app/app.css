@@ -1,31 +1,45 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+main {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Resumen ──────────────────────────────── */
+.seccion-resumen {
+  width: 100%;
+}
+
+/* ── Divisor ──────────────────────────────── */
+.divisor {
+  border-top: 1px solid #e0e0e0;
+}
+
+/* ── Alumnos + Registro ───────────────────── */
+.seccion-principal {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.panel-alumnos,
+.panel-registro {
+  min-width: 0;
+}
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 960px) {
+  .seccion-principal {
+    grid-template-columns: 1fr;
   }
-  
-  nav {
-    background: #1a237e;
-    padding: 1rem 2rem;
-    display: flex;
-    gap: 2rem;
-  }
-  
-  nav a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-  
-  nav a:hover,
-  nav a.activo {
-    background: #3949ab;
-  }
-  
-  main {
-    padding: 2rem;
-  }
+}
